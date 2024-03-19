@@ -1,0 +1,68 @@
+#DYOR
+#예시 종목은 XRP-KRW 입니다.
+
+import requests
+import pandas as pd
+
+
+# Bithumb
+url_bithumb = "https://api.bithumb.com/public/orderbook/XRP_KRW"
+headers_bithumb = {"accept": "application/json"}
+response_bithumb = requests.get(url_bithumb, headers=headers_bithumb)
+data_bithumb = response_bithumb.json()
+
+# Bithumb 데이터프레임 변환
+bids_bithumb = pd.DataFrame(data_bithumb['data']['bids'])
+asks_bithumb = pd.DataFrame(data_bithumb['data']['asks'])
+bids_bithumb['quantity'] = pd.to_numeric(bids_bithumb['quantity'])
+asks_bithumb['quantity'] = pd.to_numeric(asks_bithumb['quantity'])
+df_bithumb = pd.concat([
+    bids_bithumb[bids_bithumb['quantity'] >= 100].assign(order_type='bid'), 
+    asks_bithumb[asks_bithumb['quantity'] >= 100].assign(order_type='ask')
+])
+
+# Coinone API 호출
+url_coinone = "https://api.coinone.co.kr/public/v2/orderbook/KRW/XRP?size=15"
+headers_coinone = {"accept": "application/json"}
+response_coinone = requests.get(url_coinone, headers=headers_coinone)
+data_coinone = response_coinone.json()
+
+# Coinone 데이터프레임 변환
+bids_coinone = pd.DataFrame(data_coinone['bids'])
+asks_coinone = pd.DataFrame(data_coinone['asks'])
+bids_coinone['qty'] = pd.to_numeric(bids_coinone['qty'])
+asks_coinone['qty'] = pd.to_numeric(asks_coinone['qty'])
+
+# 수량이 100 이상인 데이터만 필터링
+bids_filtered = bids_coinone[bids_coinone['qty'] >= 100].assign(order_type='bid')
+asks_filtered = asks_coinone[asks_coinone['qty'] >= 100].assign(order_type='ask')
+
+# 필터링된 데이터프레임 결합
+df_coinone = pd.concat([bids_filtered, asks_filtered])
+
+# 결과 출력
+
+print(df_bithumb)
+print(df_coinone)
+
+
+# Bithumb에서 가장 낮은 매도 호가 찾기
+lowest_ask_bithumb = df_bithumb[df_bithumb['order_type'] == 'ask']['quantity'].min()
+
+# Coinone에서 가장 높은 매수 호가 찾기
+highest_bid_coinone = df_coinone[df_coinone['order_type'] == 'bid']['qty'].max()
+
+# Coinone에서 가장 낮은 매도 호가 찾기
+lowest_ask_coinone = df_coinone[df_coinone['order_type'] == 'ask']['qty'].min()
+
+# Bithumb에서 가장 높은 매수 호가 찾기
+highest_bid_bithumb = df_bithumb[df_bithumb['order_type'] == 'bid']['quantity'].max()
+
+# Bithumb에서 구매하여 Coinone에서 판매할 때의 차익 계산
+profit_buy_bithumb_sell_coinone = highest_bid_coinone - lowest_ask_bithumb
+
+# Coinone에서 구매하여 Bithumb에서 판매할 때의 차익 계산
+profit_buy_coinone_sell_bithumb = highest_bid_bithumb - lowest_ask_coinone
+
+print(f"Profit for buying on Bithumb and selling on Coinone: {profit_buy_bithumb_sell_coinone}")
+print(f"Profit for buying on Coinone and selling on Bithumb: {profit_buy_coinone_sell_bithumb}")
