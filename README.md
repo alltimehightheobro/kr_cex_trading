@@ -3,7 +3,8 @@
 <img src="https://img.shields.io/badge/Bitcoin-FF8000?style=for-the-badge&logo=bitcoin&logoColor=white" />
 
 Manual Trading (helper)
- - Oneclick grid
+ - Grid buy / sell
+ - best limit order maker
 
 Auto Trading (bot) 
  - arbitrage(hedge)
