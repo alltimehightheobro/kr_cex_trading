@@ -1,10 +1,11 @@
 # kr_cex_trading
-Korea CEX api
 
-Manual Trading
+<img src="https://img.shields.io/badge/Bitcoin-FF8000?style=for-the-badge&logo=bitcoin&logoColor=white" />
+
+Manual Trading (helper)
  - Oneclick grid
 
-Auto Trading
+Auto Trading (bot) 
  - arbitrage(hedge)
  - arbitrage(non-hedge)
 
