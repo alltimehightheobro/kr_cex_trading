@@ -45,24 +45,41 @@ df_coinone = pd.concat([bids_filtered, asks_filtered])
 print(df_bithumb)
 print(df_coinone)
 
+# Bithumb에서 가장 낮은 매도 호가와 그 수량 찾기
+lowest_ask_bithumb = df_bithumb[df_bithumb['order_type'] == 'ask']
+lowest_ask_price_bithumb = lowest_ask_bithumb['price'].astype(float).min()
+lowest_ask_qty_bithumb = lowest_ask_bithumb[lowest_ask_bithumb['price'].astype(float) == lowest_ask_price_bithumb]['quantity'].iloc[0]
 
-# Bithumb에서 가장 낮은 매도 호가 찾기
-lowest_ask_bithumb = df_bithumb[df_bithumb['order_type'] == 'ask']['quantity'].min()
+# Coinone에서 가장 높은 매수 호가와 그 수량 찾기
+highest_bid_coinone = df_coinone[df_coinone['order_type'] == 'bid']
+highest_bid_price_coinone = highest_bid_coinone['price'].astype(float).max()
+highest_bid_qty_coinone = highest_bid_coinone[highest_bid_coinone['price'].astype(float) == highest_bid_price_coinone]['qty'].iloc[0]
 
-# Coinone에서 가장 높은 매수 호가 찾기
-highest_bid_coinone = df_coinone[df_coinone['order_type'] == 'bid']['qty'].max()
+# 가능한 최소 수량 계산 및 이익금 총액 계산 (Bithumb -> Coinone)
+min_qty_trade_bithumb_coinone = min(lowest_ask_qty_bithumb, highest_bid_qty_coinone)
+total_profit_bithumb_coinone = (highest_bid_price_coinone - lowest_ask_price_bithumb) * min_qty_trade_bithumb_coinone
 
-# Coinone에서 가장 낮은 매도 호가 찾기
-lowest_ask_coinone = df_coinone[df_coinone['order_type'] == 'ask']['qty'].min()
+# Coinone에서 가장 낮은 매도 호가와 그 수량 찾기
+lowest_ask_coinone = df_coinone[df_coinone['order_type'] == 'ask']
+lowest_ask_price_coinone = lowest_ask_coinone['price'].astype(float).min()
+lowest_ask_qty_coinone = lowest_ask_coinone[lowest_ask_coinone['price'].astype(float) == lowest_ask_price_coinone]['qty'].iloc[0]
 
-# Bithumb에서 가장 높은 매수 호가 찾기
-highest_bid_bithumb = df_bithumb[df_bithumb['order_type'] == 'bid']['quantity'].max()
+# Bithumb에서 가장 높은 매수 호가와 그 수량 찾기
+highest_bid_bithumb = df_bithumb[df_bithumb['order_type'] == 'bid']
+highest_bid_price_bithumb = highest_bid_bithumb['price'].astype(float).max()
+highest_bid_qty_bithumb = highest_bid_bithumb[highest_bid_bithumb['price'].astype(float) == highest_bid_price_bithumb]['quantity'].iloc[0]
 
-# Bithumb에서 구매하여 Coinone에서 판매할 때의 차익 계산
-profit_buy_bithumb_sell_coinone = highest_bid_coinone - lowest_ask_bithumb
+# 가능한 최소 수량 계산 및 이익금 총액 계산 (Coinone -> Bithumb)
+min_qty_trade_coinone_bithumb = min(lowest_ask_qty_coinone, highest_bid_qty_bithumb)
+total_profit_coinone_bithumb = (highest_bid_price_bithumb - lowest_ask_price_coinone) * min_qty_trade_coinone_bithumb
 
-# Coinone에서 구매하여 Bithumb에서 판매할 때의 차익 계산
-profit_buy_coinone_sell_bithumb = highest_bid_bithumb - lowest_ask_coinone
+# 결과 출력
+if total_profit_bithumb_coinone > 0:
+    print(f"Bithumb에서 구매하여 Coinone에서 판매할 때 거래 가능한 수량 {min_qty_trade_bithumb_coinone}에 대한 총 이익: {total_profit_bithumb_coinone:.2f} KRW")
+else:
+    print("Bithumb에서 Coinone으로의 차익 거래 기회가 없습니다.")
 
-print(f"Profit for buying on Bithumb and selling on Coinone: {profit_buy_bithumb_sell_coinone}")
-print(f"Profit for buying on Coinone and selling on Bithumb: {profit_buy_coinone_sell_bithumb}")
+if total_profit_coinone_bithumb > 0:
+    print(f"Coinone에서 구매하여 Bithumb에서 판매할 때 거래 가능한 수량 {min_qty_trade_coinone_bithumb}에 대한 총 이익: {total_profit_coinone_bithumb:.2f} KRW")
+else:
+    print("Coinone에서 Bithumb으로의 차익 거래 기회가 없습니다.")
