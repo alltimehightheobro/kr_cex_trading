@@ -10,8 +10,6 @@ Auto Trading (bot)
  - arbitrage(hedge)
  - arbitrage(non-hedge)
 
-
-
 API 
  - Bithumb : using python request lib. 150/1sec
  - Coinone : using python request lib. 10/1sec
@@ -19,3 +17,5 @@ API
 Fee
  - Bithumb : Fee(0.04% only in Event period, Maker reward and Fee-payback varies on Bithumb level)
  - Coinone : Fee(0.2%)
+
+Stablecoin(USDT, USDC, ...) 
