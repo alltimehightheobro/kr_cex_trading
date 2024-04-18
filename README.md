@@ -19,3 +19,5 @@ Fee
  - Coinone : Fee(0.2%)
 
 Stablecoin(USDT, USDC, ...) 
+
+listing
