@@ -21,3 +21,5 @@ Fee
 Stablecoin(USDT, USDC, ...) 
 
 listing
+
+Future Funding fee trading
